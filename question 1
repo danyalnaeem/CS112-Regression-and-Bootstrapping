@@ -6,11 +6,11 @@ y <- 0.75 + (2*x) + E #equation
 orignal <- data.frame(x,y) #creates the dataset
 model1 <- lm (y ~ x, data =orignal) #generates a linear model without outlier
 summary(model1)
-data_outlier <- rbind(orignal, c(500,-5000)) #An outlier is added to the orignal dataset
+data_outlier <- rbind(orignal, c(500,-3100)) #An outlier is added to the orignal dataset
 
 model2<- lm(y~x, data=data_outlier) #generates a linear model with an outlier that is previously added
 summary(model2)
-plot(data_outlier,main= "Perils of Extrapolation", xlim=c(0,300), ylim=c(0,500)) #xlim and ylim functions are setting the bounds of the graph to improve its interpretability
+plot(data_outlier,main= "Perils of Extrapolation", xlim=c(0,500), ylim=c(0,500)) #xlim and ylim functions are setting the bounds of the graph to improve its interpretability
 ab1 = abline(model1,lwd=3,  col ="green",orginal)
 ab2 = abline(model2,lwd=3, col="red", data_outlier)
 legend(1, 495, legend=c("Regression without an outlier", "Regression with an outlier"),
