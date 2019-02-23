@@ -1,6 +1,9 @@
 #Question2
+
 #subquestion 1
+
 library(arm)
+data("lalonde")
 #Only control group is used for this question therfore data is subsetted
 lalonde_without_treatment <- subset(lalonde, treat==0)
 #a linear model that predicts re78 as a linear additive function of age, educ, re74, re75, educ*re74, educ*re75, age*re74, age*re75, age*age, and re74*re75
@@ -35,8 +38,101 @@ for (i in (1:39)) {
   print(upperbound_medians[i])
   print(lowerbound_medians[i])
 }
-plot(c(1:100), c(1:100), type = 'n', ylim = c(0, 14000), xlim = c(17,55),
-     main = "Scatter Plot While Holding Predictors at Medians Without Incorporating Sigmas", xlab = "Age", ylab = "Real Earnings in 1978")
+
+#subquestion 2
+
+#75th quartiles of variables that are to be held at 75th
+q_edu <- quantile(lalonde_without_treatment$educ,0.75)
+q_re74 <- quantile(lalonde_without_treatment$re74,0.75)
+q_re75 <- quantile(lalonde_without_treatment$re75,0.75)
+resultant_2 <- matrix(rep(0, 10000*39), nrow= 39, ncol=10000)
+
+storage_2 = rep(1:10000)
+for (i in (17:55)) {
+  matrix_two <- matrix(c(1, i,q_edu,q_re74,q_re75,q_edu*median_re74,q_edu*median_re75,i*q_re74,i*q_re75,i*i,q_re74*q_re75))
+  storage_2<- simulated@coef %*% matrix_two 
+  resultant_2[i-16, ] = storage_2
+}
+upperbound_qs <- rep(0,39)
+lowerbound_qs <- rep(0,39)
+
+for (i in (1:39)) {
+  upperbound_qs[i]<- quantile(resultant_2[i, ], 0.975)
+  lowerbound_qs[i]<- quantile(resultant_2[i, ], 0.025)
+  
+  print(c(i+16))
+  print(upperbound_qs[i])
+  print(lowerbound_qs[i])
+}
+
+#Subquestion 3
+
+simulated <- sim(model1, n.sims =10000)
+#A matrix is created which will store 10000 coefficients for each age from 17 to 55
+resultant_3 <- matrix(rep(0, 10000*39), nrow= 39, ncol=10000)
+
+storage_3 = rep(1:10000)
+#medians of variables to that are to be held at median:
+median_edu <- median(lalonde_without_treatment$educ)
+median_re74 <- median(lalonde_without_treatment$re74)
+median_re75 <- median(lalonde_without_treatment$re75)
+
+for (i in (17:55)) {
+  matrix_three <- matrix(c(1, i,median_edu,median_re74,median_re75,median_edu*median_re74,median_edu*median_re75,i*median_re74,i*median_re75,i*i,median_re74*median_re75))
+  storage_3<- simulated@coef %*% matrix_three + rnorm(10000,0,simulated@sigma)
+  resultant_3[i-16, ] = storage_3
+}
+upperbound_medians_3 <- rep(0,39)
+lowerbound_medians_3<- rep(0,39)
+
+for (i in (1:39)) {
+  upperbound_medians_3[i]<- quantile(resultant_3[i, ], 0.975)
+  lowerbound_medians_3[i]<-quantile(resultant_3[i, ], 0.025)
+  
+  print(c(i+16))
+  print(lowerbound_medians_3[i])
+  print(upperbound_medians_3[i])
+  
+}
+
+#subquestion 4
+
+q_edu <- quantile(lalonde_without_treatment$educ,0.75)
+q_re74 <- quantile(lalonde_without_treatment$re74,0.75)
+q_re75 <- quantile(lalonde_without_treatment$re75,0.75)
+resultant_4 <- matrix(rep(0, 10000*39), nrow= 39, ncol=10000)
+
+storage_4 = rep(1:10000)
+for (i in (17:55)) {
+  matrix_four <- matrix(c(1, i,q_edu,q_re74,q_re75,q_edu*median_re74,q_edu*median_re75,i*q_re74,i*q_re75,i*i,q_re74*q_re75))
+  storage_4<- simulated@coef %*% matrix_four+ rnorm(10000,0,simulated@sigma)
+  resultant_4[i-16, ] = storage_4
+}
+
+upperbound_qs_4 <- rep(0,39)
+lowerbound_qs_4 <- rep(0,39)
+
+for (i in (1:39)) {
+  upperbound_qs_4[i]= quantile(resultant_4[i, ], 0.975)
+  lowerbound_qs_4[i]= quantile(resultant_4[i, ], 0.025)
+  
+  print(c(i+16))
+  print(lowerbound_qs_4[i])
+  print(upperbound_qs_4[i])
+  
+}
+
+#Plots for Expected values
+
+plot(c(1:100), c(1:100), type = 'n', ylim = c(0, 14000), xlim = c(17,55), main = "Scatter Plot of the 2 Interval Analyses with Expected Values",xlab = "Age", ylab = "Real Earnings in 1978",legend(20,1000,c("Holding at Medians","Holding at the 75th quantile"),cex = 0.8,col=c("red","purple"))
+for (i in 17:55) {
+  segments(
+    x0 = i,
+    y0= lowerbound_qs[i - 16],
+    x1 = i, 
+    y1= upperbound_qs[i - 16],
+    col = "purple")
+}
 for (i in 17:55) {
   segments(
     x0 = i,
@@ -44,112 +140,22 @@ for (i in 17:55) {
     x1 = i, 
     y1= upperbound_medians[i - 16], col="red")
 }
-#subquestion 2
-#75th quartiles of variables that are to be held at 75th
-q_edu <- quantile(lalonde_without_treatment$educ,0.75)
-q_re74 <- quantile(lalonde_without_treatment$re74,0.75)
-q_re75 <- quantile(lalonde_without_treatment$re75,0.75)
-resultant <- matrix(rep(0, 10000*39), nrow= 39, ncol=10000)
 
-storage = rep(1:10000)
-for (i in (17:55)) {
-  matrix_one <- matrix(c(1, i,q_edu,q_re74,q_re75,q_edu*median_re74,q_edu*median_re75,i*q_re74,i*q_re75,i*i,q_re74*q_re75))
-  storage<- simulated@coef %*% matrix_one 
-  resultant[i-16, ] = storage
-}
-upperbound_qs <- rep(0,39)
-lowerbound_qs <- rep(0,39)
+#plots for predicted values
 
-for (i in (1:39)) {
-  upperbound_qs[i]<- quantile(resultant[i, ], 0.975)
-  lowerbound_qs[i]<- quantile(resultant[i, ], 0.025)
-  
-  print(c(i+16))
-  print(upperbound_qs[i])
-  print(lowerbound_qs[i])
-}
-plot(c(1:100), c(1:100), type = 'n', ylim = c(0, 14000), xlim = c(17,55),
-     main = "Scatter Plot While Holding Predictors at 75th quantile Without Incorporating Sigmas", xlab = "Age", ylab = "Real Earnings in 1978")
-for (i in 17:55) {
-  segments(
-    x0 = i,
-    y0= lowerbound_qs[i - 16],
-    x1 = i, 
-    y1= upperbound_qs[i - 16], col = "purple")
-}
-#Subquestion 3
-simulated <- sim(model1, n.sims =10000)
-#A matrix is created which will store 10000 coefficients for each age from 17 to 55
-resultant <- matrix(rep(0, 10000*39), nrow= 39, ncol=10000)
-
-storage = rep(1:10000)
-#medians of variables to that are to be held at median:
-median_edu <- median(lalonde_without_treatment$educ)
-median_re74 <- median(lalonde_without_treatment$re74)
-median_re75 <- median(lalonde_without_treatment$re75)
-
-for (i in (17:55)) {
-  matrix_one <- matrix(c(1, i,median_edu,median_re74,median_re75,median_edu*median_re74,median_edu*median_re75,i*median_re74,i*median_re75,i*i,median_re74*median_re75))
-  storage<- simulated@coef %*% matrix_one + rnorm(10000,0,simulated@sigma)
-  resultant[i-16, ] = storage
-}
-upperbound_medians <- rep(0,39)
-lowerbound_medians <- rep(0,39)
-
-for (i in (1:39)) {
-  upperbound_medians[i]<- quantile(resultant[i, ], 0.975)
-  lowerbound_medians[i]<-quantile(resultant[i, ], 0.025)
-  
-  print(c(i+16))
-  print(lowerbound_medians[i])
-  print(upperbound_medians[i])
-  
-}
 plot(c(1:100), c(1:100), type = 'n', ylim = c(-8000, 20000), xlim = c(17,55),
-     main = "Scatter Plot While Holding Predictors at Medians and Incorporating Sigma", xlab = "Age", ylab = "Real Earnings in 1978")
+     main = "Scatter Plot of the 2 Interval Analyses with Predicted Values", xlab = "Age", ylab = "Real Earning Income 1978",)
 for (i in 17:55) {
   segments(
     x0 = i,
-    y0= lowerbound_medians[i - 16],
+    y0= lowerbound_qs_4[i - 16],
     x1 = i, 
-    y1= upperbound_medians[i - 16], col="green")
+    y1= upperbound_qs_4[i - 16], col="navy")
 }
-#subquestion 4
-
-resultant <- matrix(rep(0, 10000*39), nrow= 39, ncol=10000)
-
-storage = rep(1:10000)
-q_edu <- quantile(lalonde_without_treatment$educ,0.75)
-q_re74 <- quantile(lalonde_without_treatment$re74,0.75)
-q_re75 <- quantile(lalonde_without_treatment$re75,0.75)
-resultant <- matrix(rep(0, 10000*39), nrow= 39, ncol=10000)
-
-storage = rep(1:10000)
-for (i in (17:55)) {
-  matrix_one <- matrix(c(1, i,q_edu,q_re74,q_re75,q_edu*median_re74,q_edu*median_re75,i*q_re74,i*q_re75,i*i,q_re74*q_re75))
-  storage<- simulated@coef %*% matrix_one + rnorm(10000,0,simulated@sigma)
-  resultant[i-16, ] = storage
-}
-
-upperbound_qs <- rep(0,39)
-lowerbound_qs <- rep(0,39)
-
-for (i in (1:39)) {
-  upperbound_qs[i]= quantile(resultant[i, ], 0.975)
-  lowerbound_qs[i]= quantile(resultant[i, ], 0.025)
-  
-  print(c(i+16))
-  print(lowerbound_qs[i])
-  print(upperbound_qs[i])
-  
-}
-plot(c(1:100), c(1:100), type = 'n', ylim = c(-8000, 20000), xlim = c(17,55),
-     main = "Scatter Plot While Holding Predictors at 75th quantile and Incorporating Sigmas", xlab = "Age", ylab = "Real Earning Income 1978")
 for (i in 17:55) {
   segments(
     x0 = i,
-    y0= lowerbound_qs[i - 16],
+    y0= lowerbound_medians_3[i - 16],
     x1 = i, 
-    y1= upperbound_qs[i - 16], col="navy")
+    y1= upperbound_medians_3[i - 16], col="green")
 }
-
