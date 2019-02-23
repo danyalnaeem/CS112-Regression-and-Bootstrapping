@@ -1,0 +1,12 @@
+#Question 4
+
+rsquared <- function(y,predicted_y){
+  mean_of_y <- mean(y)
+  SSE = sum((y - predicted_y)^2)
+  total_sum_of_squares <-  sum((y-mean_of_y)^2)
+  r_squared = 1 - (SSE/total_sum_of_squares)
+  return(r_squared)
+}
+model_1 <- lm(weight ~ group, data=PlantGrowth)
+predicted_y <- predict(model_1, newdata = PlantGrowth)
+rsquared(plant_data$weight,predicted_y)
