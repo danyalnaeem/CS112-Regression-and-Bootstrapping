@@ -12,7 +12,7 @@ simulated <- sim(model1, n.sims =10000)
 resultant <- matrix(rep(0, 10000*39), nrow= 39, ncol=10000)
 storage = rep(1:10000)
 
-#medians of variables to that are to be held at median:
+#medians of variables to that are to be held at median (to be used for future reference)
 median_edu <- median(lalonde_without_treatment$educ)
 median_re74 <- median(lalonde_without_treatment$re74)
 median_re75 <- median(lalonde_without_treatment$re75)
@@ -22,13 +22,15 @@ for (i in (17:55)) {
   storage<- simulated@coef %*% matrix_one 
   resultant[i-16, ] = storage
 }
+#creats storage space 
 upperbound_medians <- rep(0,39)
 lowerbound_medians <- rep(0,39)
 
+#The lower and upper bounds of the elements stored in resultant are calculated and stored
 for (i in (1:39)) {
   upperbound_medians[i]<- quantile(resultant[i, ], 0.975)
   lowerbound_medians[i]<- quantile(resultant[i, ], 0.025)
-   
+  #these are printed to make a table as asked in the instructions 
   print(c(i+16))
   print(upperbound_medians[i])
   print(lowerbound_medians[i])
