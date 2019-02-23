@@ -1,0 +1,15 @@
+library('foreign')
+Q5_data <- nsw
+logistic_regression_model <- glm(treat ~ age + education + black + hispanic +married + nodegree + re75, data = Q5_data, family= binomial)
+predicted_problability <- predict(logistic_regression_model, newdata= Q5_data, type= "response")
+control <- predicted_problability [which(Q5_data$treat==0)]
+treatment <-  predicted_problability[which(Q5_data$treat==1)]
+
+hist(control,breaks=40, col = 'blue', main = "Distribution of the Control Group’s Estimated Probabilities", xlab = "Probabilities")
+
+hist(treatment, breaks = 40, col= 'red', main = "Distribution of the Treatment Group’s Estimated Probabilities", xlab = "Probabilities")
+
+hist(control, col="blue", main = "Overlapping Distribution", xlab = "Probabilities",breaks=40)
+hist(treatment, col="red",breaks=40, add= T)
+legend(x= 0.47, y= 60, legend = c("Control Group", "Treatment Group"), fill = c(4,2))
+box()
