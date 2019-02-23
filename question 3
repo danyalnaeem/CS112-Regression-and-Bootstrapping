@@ -14,7 +14,7 @@ model_2<-lm(weight ~ group == "0", data=relevant_data) #linear model for control
 summary(model)
 summary(model_2)
 
-#Manual coding for boostrapping
+#Manual coding for boostrapping – a function is made
 bootstrapping_method = function(data) {
   sampling = sample(1:nrow(data), nrow(data), replace = TRUE)
   return(sampling)
@@ -22,7 +22,7 @@ bootstrapping_method = function(data) {
 storage_vector= rep(1:10000) #Creating a memory for 10,000 entries since bootstrapping occurs 10000 times
 for(i in 1:10000) {
   bootstrapped_data= relevant_data[bootstrapping_method(relevant_data), ]
-  regression = lm(bootstrapped_data$weight ~ bootstrapped_data$group == "1")
+  regression = lm(bootstrapped_data$weight ~ bootstrapped_data$group == "1") #lm for treatment1 is generated
   storage_vector[i]= regression$coefficients[1]
 }  
 hist(storage_vector, main = "Results for Bootstrapping", col="blue", xlab = "Coefficients for Treatment")
