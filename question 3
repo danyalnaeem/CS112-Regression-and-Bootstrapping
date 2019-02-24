@@ -13,7 +13,7 @@ model <- lm(weight ~ group == "1", data=relevant_data) #linear model for treatme
 model_2<-lm(weight ~ group == "0", data=relevant_data) #linear model for control group
 summary(model)
 summary(model_2)
-
+#As per the instructuons, one of the two models above is to be used for boostrapping and I have chosen "model" (where treatment 1 is the predictor)
 #Manual coding for boostrapping – a function is made
 bootstrapping_method = function(data) {
   sampling = sample(1:nrow(data), nrow(data), replace = TRUE)
