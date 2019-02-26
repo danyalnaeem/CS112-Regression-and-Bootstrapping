@@ -124,7 +124,7 @@ for (i in (1:39)) {
 
 #Plots for Expected values
 
-plot(c(1:100), c(1:100), type = 'n', ylim = c(0, 14000), xlim = c(17,55), main = "Scatter Plot of the 2 Interval Analyses with Expected Values",xlab = "Age", ylab = "Real Earnings in 1978",legend(20,1000,c("Holding at Medians","Holding at the 75th quantile"),cex = 0.8,col=c("red","purple"))
+plot(c(1:100), c(1:100), type = 'n', ylim = c(0, 14000), xlim = c(17,55), main = "Scatter Plot of the 2 Interval Analyses with Expected Values",xlab = "Age", ylab = "Real Earnings in 1978")
 for (i in 17:55) {
   segments(
     x0 = i,
